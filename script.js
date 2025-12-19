@@ -1,0 +1,47 @@
+const diseases = [
+    { name: "Common Cold", symptoms: ["cough", "sore_throat", "headache", "fatigue", "fever"] },
+    { name: "Influenza (Flu)", symptoms: ["fever", "cough", "fatigue", "headache", "joint_pain", "sore_throat"] },
+    { name: "COVID-19", symptoms: ["fever", "cough", "shortness_of_breath", "fatigue", "loss_of_taste", "headache"] },
+    { name: "Gastroenteritis", symptoms: ["nausea", "diarrhea", "fever", "headache"] },
+    { name: "Migraine", symptoms: ["headache", "nausea", "dizziness", "fatigue"] },
+    { name: "Pneumonia", symptoms: ["cough", "fever", "shortness_of_breath", "chest_pain", "fatigue"] },
+    { name: "Allergic Reaction", symptoms: ["rash", "cough", "shortness_of_breath", "dizziness"] },
+    { name: "Heart Issue", symptoms: ["chest_pain", "shortness_of_breath", "fatigue", "dizziness"] }
+];
+
+function checkSymptoms() {
+    const selected = [...document.querySelectorAll('input[type="checkbox"]:checked')]
+        .map(cb => cb.value);
+
+    if (!selected.length) {
+        alert("Select at least one symptom");
+        return;
+    }
+
+    const matches = diseases.map(d => {
+        const count = d.symptoms.filter(s => selected.includes(s)).length;
+        const percent = Math.round((count / d.symptoms.length) * 100);
+        return { ...d, count, percent };
+    }).filter(d => d.count > 0).sort((a, b) => b.percent - a.percent);
+
+    let html = `<h3 class="text-center text-primary fw-bold">Possible Conditions</h3>`;
+
+    matches.forEach((m, i) => {
+        html += `
+        <div class="card disease-card card-${(i % 8) + 1}">
+            <div class="card-body text-center py-5">
+                <h2 class="fw-bold">${m.name}</h2>
+                <p class="text-danger fs-3">${m.percent}% Match</p>
+                <p>(${m.count} of ${m.symptoms.length} symptoms)</p>
+                <small class="text-muted">Educational only</small>
+            </div>
+        </div>`;
+    });
+
+    document.getElementById("results").innerHTML = html;
+}
+
+function resetSymptoms() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById("results").innerHTML = "";
+}
